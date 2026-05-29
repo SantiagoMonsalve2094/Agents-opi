@@ -1,0 +1,16 @@
+services:
+  opi-agents-postgres:
+    image: postgres:16
+    container_name: opi_agents_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: opi_agents_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5435:5432"
+    volumes:
+      - opi_agents_postgres_data:/var/lib/postgresql/data
+
+volumes:
+  opi_agents_postgres_data:
