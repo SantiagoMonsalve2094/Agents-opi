@@ -1,0 +1,55 @@
+{
+  "manifestVersion": 1,
+  "id": "hekate-qa-local",
+  "name": "HEKATE-QA Local",
+  "version": "0.0.16",
+  "publisher": "santiago-local",
+  "description": "Hub local para abrir el agente HEKATE-QA dentro de Azure DevOps.",
+  "public": false,
+  "categories": [
+    "Azure Boards"
+  ],
+  "targets": [
+    {
+      "id": "Microsoft.VisualStudio.Services.Cloud"
+    }
+  ],
+  "icons": {
+    "default": "images/icon.png"
+  },
+  "files": [
+    {
+      "path": "hub.html",
+      "addressable": true
+    },
+    {
+      "path": "images",
+      "addressable": true
+    },
+    {
+      "path": "node_modules/azure-devops-extension-sdk",
+      "addressable": true
+    },
+    {
+      "path": "node_modules/requirejs",
+      "addressable": true
+    }
+  ],
+  "contributions": [
+    {
+      "id": "hekate-qa-hub",
+      "type": "ms.vss-web.hub",
+      "targets": [
+        "ms.vss-work-web.work-hub-group"
+      ],
+      "properties": {
+        "name": "HEKATE-QA",
+        "order": 90,
+        "uri": "hub.html",
+        "icon": "asset://images/icon.png",
+        "iconName": "Robot"
+      }
+    }
+  ],
+  "scopes": []
+}

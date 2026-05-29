@@ -1,0 +1,55 @@
+{
+  "manifestVersion": 1,
+  "id": "opi-hu-local",
+  "name": "OPI-HU Local",
+  "version": "0.0.13",
+  "publisher": "santiago-local",
+  "description": "Hub local para abrir el agente OPI-HU dentro de Azure DevOps.",
+  "public": false,
+  "categories": [
+    "Azure Boards"
+  ],
+  "targets": [
+    {
+      "id": "Microsoft.VisualStudio.Services.Cloud"
+    }
+  ],
+  "icons": {
+    "default": "images/icon.png"
+  },
+  "files": [
+    {
+      "path": "hub.html",
+      "addressable": true
+    },
+    {
+      "path": "images",
+      "addressable": true
+    },
+    {
+      "path": "node_modules/azure-devops-extension-sdk",
+      "addressable": true
+    },
+    {
+      "path": "node_modules/requirejs",
+      "addressable": true
+    }
+  ],
+  "contributions": [
+    {
+      "id": "opi-hu-hub",
+      "type": "ms.vss-web.hub",
+      "targets": [
+        "ms.vss-work-web.work-hub-group"
+      ],
+      "properties": {
+        "name": "OPI-HU",
+        "order": 91,
+        "uri": "hub.html",
+        "icon": "asset://images/icon.png",
+        "iconName": "Document"
+      }
+    }
+  ],
+  "scopes": []
+}

@@ -1,0 +1,161 @@
+<main class="shell">
+  <header class="topbar">
+    <div class="brand">
+      <img src="opi-logo.png" alt="OpiTech" />
+      <div class="brand-divider"></div>
+      <h1>{{ uiText.agentTitle }}</h1>
+    </div>
+    <div class="user-area">
+      <span>{{ greeting }}</span>
+      <div class="avatar">{{ getInitials() }}</div>
+    </div>
+  </header>
+
+  <section class="workspace">
+    <aside class="history-panel">
+      <div class="history-title">
+        <div class="history-label">
+          <span class="history-icon">◷</span>
+          <h2>Historial</h2>
+        </div>
+        <button class="new-button" type="button" (click)="newChat()" [disabled]="isLoading">
+          + {{ uiText.newConversation }}
+        </button>
+      </div>
+
+      <div class="search-box">
+        <input type="search" [(ngModel)]="searchTerm" [placeholder]="uiText.historySearch" />
+        <span>⌕</span>
+      </div>
+
+      <div class="history-list">
+        @if (isHistoryLoading) {
+          <div class="history-empty">{{ uiText.loadingHistory }}</div>
+        } @else if (!filteredConversations.length) {
+          <div class="history-empty">{{ uiText.noHistory }}</div>
+        } @else {
+          @for (conversation of filteredConversations; track trackConversation($index, conversation)) {
+            <article
+              class="history-item"
+              role="button"
+              tabindex="0"
+              [class.active]="conversation.id === currentConversationId"
+              (click)="openConversation(conversation.id)"
+            >
+              <span>{{ conversation.title }}</span>
+              <small>{{ conversation.updatedAt | date:'short' }}</small>
+              <button
+                class="delete-history"
+                type="button"
+                title="Eliminar"
+                (click)="deleteConversation(conversation.id, $event)"
+              >x</button>
+            </article>
+          }
+        }
+      </div>
+    </aside>
+
+    <section class="chat-panel">
+      <nav class="phase-stepper" aria-label="Fases del agente">
+        @for (phaseAction of phaseActions; track trackPhase($index, phaseAction)) {
+          <button
+            type="button"
+            class="phase-pill"
+            [class.current]="phaseAction.phase === currentPhase"
+            [class.done]="getPhaseStatus(phaseAction.phase) === uiText.completed"
+            [class.stale]="getPhaseStatus(phaseAction.phase) === uiText.stale"
+            [disabled]="!canUsePhase(phaseAction.phase)"
+            (click)="selectPhase(phaseAction.phase)"
+          >
+            <span class="phase-number">{{ getPhaseNumber(phaseAction.phase) }}</span>
+            <span>
+              <strong>{{ phaseAction.label }}</strong>
+              <small>{{ getPhaseStatus(phaseAction.phase) }}</small>
+            </span>
+          </button>
+        }
+      </nav>
+
+      <div class="current-phase">
+        <span></span>
+        {{ uiText.currentPhase }}: {{ getPhaseLabel(currentPhase) }}
+      </div>
+
+      <section #chatBody class="chat-body">
+        @if (errorMessage) {
+          <div class="error">{{ errorMessage }}</div>
+        }
+
+        @if (stalePromptPhase) {
+          <div class="stale-warning">
+            <strong>{{ uiText.stalePhaseMessage }}</strong>
+            <div class="stale-actions">
+              <button type="button" (click)="resolveStalePhase(true)" [disabled]="isLoading">
+                {{ uiText.regenerateWithFeedback }}
+              </button>
+              <button type="button" class="outline-button" (click)="resolveStalePhase(false)" [disabled]="isLoading">
+                {{ uiText.keepCurrentPhase }}
+              </button>
+            </div>
+          </div>
+        }
+
+        @if (!messages.length) {
+          <div class="empty-chat">
+            Escribe la entrada inicial y usa el botón enviar para iniciar el flujo.
+          </div>
+        }
+
+        @for (message of messages; track trackMessage($index, message)) {
+          <article class="message-row" [class.user-message]="message.role === 'user'">
+            <div class="message-avatar" [class.agent-avatar]="message.role === 'agent'">
+              {{ message.role === 'agent' ? 'IA' : getInitials() }}
+            </div>
+            <div class="message-card">
+              <header class="message-header">
+                <strong>{{ message.role === 'agent' ? uiText.agentName : 'Usuario' }}</strong>
+                @if (message.phase) {
+                  <span>{{ getPhaseLabel(message.phase) }}</span>
+                }
+                <small>{{ message.createdAt | date:'shortTime' }}</small>
+              </header>
+
+              @if (message.role === 'agent') {
+                <div class="markdown-output" [innerHTML]="message.renderedContent || (message.isStreaming ? uiText.thinking : '')"></div>
+                @if (!message.isStreaming && message.phase) {
+                  <div class="message-actions">
+                    <button type="button" (click)="approveAndContinue(message.phase)" [disabled]="isLoading">
+                      ✓ {{ uiText.approveAndContinue }}
+                    </button>
+                    <button type="button" class="outline-button" (click)="requestFeedback(message.phase)" [disabled]="isLoading">
+                      ✎ {{ uiText.requestAdjustment }}
+                    </button>
+                    <button type="button" class="icon-button" (click)="copyOutput()" title="Copiar resultado">
+                      {{ copyOutputText }}
+                    </button>
+                  </div>
+                }
+              } @else {
+                <p [innerHTML]="message.renderedContent"></p>
+              }
+            </div>
+          </article>
+        }
+      </section>
+
+      <footer class="composer">
+        <button class="attach-button" type="button" title="Adjuntar" disabled>⌘</button>
+        <textarea
+          [(ngModel)]="composerText"
+          [placeholder]="composerPlaceholder"
+          [disabled]="isLoading"
+          (keydown.control.enter)="submitComposer()"
+        ></textarea>
+        <button class="send-button" type="button" (click)="submitComposer()" [disabled]="!canSend">
+          ➤
+        </button>
+      </footer>
+    </section>
+  </section>
+</main>

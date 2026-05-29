@@ -1,0 +1,29 @@
+# Angular output
+angular-app/dist/
+angular-app/.angular/
+angular-app/out-tsc/
+angular-app/tmp/
+angular-app/coverage/
+
+# Node dependencies
+angular-app/node_modules/
+azure-devops-extension/node_modules/
+npm-debug.log
+yarn-error.log
+
+# Extension packaging
+azure-devops-extension/*.vsix
+*.vsix
+
+# Local environment
+.env
+.env.*
+!.env.example
+
+# IDE and OS files
+.vscode/
+.vs/
+.idea/
+*.log
+.DS_Store
+Thumbs.db
